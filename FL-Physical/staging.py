@@ -130,11 +130,38 @@ class Args:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.verbose = True
         self.local_ep = 1
-        self.client_id = 1
-        self.ServerName = "ServerUsername"
-        self.ServerPassword = "ServerPassword"
+        #self.client_id = 1
+        #self.ServerName = "ServerUsername"
+        #self.ServerPassword = "ServerPassword"
 args = Args()
 
+
+# Read in the config file
+f = open("config.txt", "r")
+
+lineCount = 0
+for line in f:
+    currentLine = line.strip('\n').split("=")
+    print(currentLine)
+
+    if currentLine[0] == 'CLIENT_ID':
+        CLIENT_ID = currentLine[1]
+    
+    if currentLine[0] == 'SERVER_PORT':
+        PORT = currentLine[1]
+
+    if currentLine[0] == 'SERVER_IP':
+        SERVER = currentLine[1]
+    
+    if currentLine[0] == 'SERVER_NAME':
+        SERVER_NAME = currentLine[1]
+    
+    if currentLine[0] == 'SERVER_PASS':
+        SERVER_PASS = currentLine[1]
+    
+    lineCount += 1
+
+f.close()
 
 while True:
 
@@ -172,7 +199,7 @@ while True:
     print(msg_decoded)
 
     if(msg_decoded == "EXIT()"):
-        client.send(bytes("Client-"+args.client_id+" terminated","utf-8"))
+        client.send(bytes("Client-"+CLIENT_ID+" terminated","utf-8"))
         client.close()
         exit()
     
@@ -190,22 +217,22 @@ while True:
     state_dict, avg_loss, lossPerEpoch = local_update.train(net_glob)
     print("Training Finished")
     # Save the model dictionary/parameters
-    torch.save(state_dict, 'main_server_fed_'+args.client_id+'.pt')
+    torch.save(state_dict, 'main_server_fed_'+CLIENT_ID+'.pt')
 
 
 
     ## Send Model
     # Here is only sending the model back
     # no sockets
-    username = args.ServerName  # username of central server
-    password = args.ServerPassword  # password of central server
+    username = SERVER_NAME  # username of central server
+    password = SERVER_PASS  # password of central server
         
 
     server_SSH = paramiko.client.SSHClient()
     server_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     server_SSH.connect(SERVER, username=username, password=password)
-    SendToServer(server=server_SSH,file="main_server_fed_"+args.client_id+".pt",
-                filepath="/Users/trev4/Desktop/FL-CPE495/federated-learning/Pi_models/main_server_fed_"+args.client_id+".pt",
+    SendToServer(server=server_SSH,file="main_server_fed_"+CLIENT_ID+".pt",
+                filepath="/Users/trev4/Desktop/FL-CPE495/federated-learning/Pi_models/main_server_fed_"+CLIENT_ID+".pt",
                 message="sent file")
 
 
