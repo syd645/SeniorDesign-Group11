@@ -296,7 +296,7 @@ if __name__ == '__main__':
         for idx in idxs_users:
            # print(" User: " , dict_users[idx])
             local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
-            w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device))
+            w, loss, epsilon = local.train(net=copy.deepcopy(net_glob).to(args.device))
 
             acc_train, l = test_img(net_glob, dataset_train, args)
             print('Accuracy: ', acc_train, "\n")
@@ -307,6 +307,7 @@ if __name__ == '__main__':
             else:
                 w_locals.append(copy.deepcopy(w))
             loss_locals.append(copy.deepcopy(loss))
+            epsList.append(copy.deepcopy(epsilon))
 
         print("Epsilon List: ", epsList)
 

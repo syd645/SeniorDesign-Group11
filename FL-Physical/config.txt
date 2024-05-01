@@ -5,3 +5,4 @@ SERVER_IP=10.4.130.19
 SERVER_NAME=SERVERUSERNAME
 SERVER_PASS=ServerPassword
 SERVER_FILE_LOC=/Users/trev4/Desktop/FL-Finalrepo/SeniorDesign-Group11/FL-Physical/Pi_models/
+
