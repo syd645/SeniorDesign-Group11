@@ -21,8 +21,22 @@ def SendToClient(client,clientsocket, file = "",filepath = "",message = ""):
 
 def Connection_handling(clientsocket, address):
     #time.sleep(5)
-    username = 'pi'   # username of raspberry pi 4
-    password = 'raspberry'   # pasword of raspberry pi 4
+    f = open("config_server.txt", "r")
+    lineCount = 0
+    for line in f:
+        currentLine = line.strip('\n').split("=")
+
+        if currentLine[0] == 'CLIENT_USRNM':
+            CLIENT_USRNM = currentLine[1]       
+
+        if currentLine[0] == 'CLIENT_PSWD':
+            CLIENT_PSWD = currentLine[1]  
+        
+        lineCount += 1
+
+    f.close()
+    username = CLIENT_USRNM   # username of raspberry pi 4
+    password = CLIENT_PSWD   # pasword of raspberry pi 4
 
     # set up paramiko ssh client for scp file sending
     SSH_client = paramiko.client.SSHClient()

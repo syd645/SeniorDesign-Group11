@@ -106,7 +106,7 @@ def SendToServer(server, file = "",filepath = "",message = ""):
 Searching_connection = True
 PORT = 4045
 #SERVER = "10.4.159.106"
-SERVER = "10.4.148.119"
+#SERVER = "10.4.148.119"
 
 #Create dataset
 dataset = torch.load('LS_HAR_data.pt').float()
@@ -143,22 +143,27 @@ lineCount = 0
 for line in f:
     currentLine = line.strip('\n').split("=")
     print(currentLine)
-
+    
     if currentLine[0] == 'CLIENT_ID':
         CLIENT_ID = currentLine[1]
-    
+        #CLIENT_ID = int(CLIENT_ID)
+        print(currentLine[1])
     if currentLine[0] == 'SERVER_PORT':
         PORT = currentLine[1]
-
+        PORT = int(PORT)
+        print(currentLine[1])
     if currentLine[0] == 'SERVER_IP':
         SERVER = currentLine[1]
-    
+        print(SERVER)
     if currentLine[0] == 'SERVER_NAME':
         SERVER_NAME = currentLine[1]
-    
+        print(currentLine[1])
     if currentLine[0] == 'SERVER_PASS':
         SERVER_PASS = currentLine[1]
-    
+        print(currentLine[1])
+    if currentLine[0] == 'SERVER_FILE_LOC':
+        SERVER_FILE_LOC = currentLine[1]
+        print(currentLine[1])
     lineCount += 1
 
 f.close()
@@ -184,6 +189,8 @@ while True:
     while Searching_connection:
         try:
             #connect here ##############
+            #PORT = 4045          
+            #SERVER = "10.4.130.19"
             client.connect((SERVER, PORT))
             Searching_connection = False
 
@@ -226,13 +233,14 @@ while True:
     # no sockets
     username = SERVER_NAME  # username of central server
     password = SERVER_PASS  # password of central server
+    file_path = SERVER_FILE_LOC
         
 
     server_SSH = paramiko.client.SSHClient()
     server_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     server_SSH.connect(SERVER, username=username, password=password)
     SendToServer(server=server_SSH,file="main_server_fed_"+CLIENT_ID+".pt",
-                filepath="/Users/trev4/Desktop/FL-CPE495/federated-learning/Pi_models/main_server_fed_"+CLIENT_ID+".pt",
+                filepath=file_path+"main_server_fed_"+CLIENT_ID+".pt",
                 message="sent file")
 
 

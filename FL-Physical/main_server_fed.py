@@ -112,12 +112,40 @@ def adjustPB(PBList, accList):
 
 
 if __name__ == '__main__':
+    f = open("config_server.txt", "r")
+    lineCount = 0
+    for line in f:
+        currentLine = line.strip('\n').split("=")
+        print(currentLine)
+
+        if currentLine[0] == 'NUM_CLIENTS':
+            NUM_CLIENTS = currentLine[1]
+            NUM_CLIENTS = int(NUM_CLIENTS)
+        
+        if currentLine[0] == 'SERVER_PORT':
+            PORT = currentLine[1]
+            PORT = int(PORT)
+
+        if currentLine[0] == 'SERVER_IP':
+            SERVER = currentLine[1]
+
+        if currentLine[0] == 'MODELFOLDER':
+            MODELFOLDER = currentLine[1] 
+        
+        if currentLine[0] == 'NUM_gl_EPOCHS':
+            NUM_gl_EPOCHS = currentLine[1] 
+            NUM_gl_EPOCHS = int(NUM_gl_EPOCHS)      
+
+        
+        lineCount += 1
+
+    f.close()
     # parse args
     args = args_parser()
     args.device = torch.device('cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
     ################## args def for testing
-    args.num_users = 3
-    args.epochs = 50
+    args.num_users = NUM_CLIENTS
+    args.epochs = NUM_gl_EPOCHS
     args.dataset = 'HAR_LS' 
     args.model = 'resnet' 
     args.num_channels = 1 
@@ -128,14 +156,14 @@ if __name__ == '__main__':
     training_loss_list = []
 
     # load dataset and split users
-    dataset = torch.load('LS_HAR_data.pt')
+    dataset = torch.load('../../LS_HAR_data.pt')
     print(dataset.shape)
     #dataset = dataset.float()
     dataset = CustomDataset(dataset)
     
 
     total_count = len(dataset)
-    train_count = int(0.05*total_count) # 70%
+    train_count = int(0.05*total_count) # 5%
     test_count = total_count - train_count
     random.seed(42)
     torch.manual_seed(42)
@@ -182,8 +210,8 @@ if __name__ == '__main__':
         w_locals = [w_glob for i in range(args.num_users)]
     
     #host = "10.4.159.106"   # this the address of server computer (not client!!)
-    host = "10.4.148.119"
-    port = 4045
+    host = SERVER
+    port = PORT
 
    # set up TCP socket connection for server 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -194,13 +222,13 @@ if __name__ == '__main__':
 
         #Distribute the model to all clients
         for idx in range(0, args.num_users):
-            #print("In for loop :)")
+            print("In for loop :)")
             clientsocket, address = server.accept() 
             print("connection from " + address[0] + " accepted.")
             Connection_handling(clientsocket, address)
 
         #Wait for all client models to be received
-        modelFolder = "C:\\Users\\trev4\\Desktop\\FL-CPE495\\federated-learning\\Pi_models"
+        modelFolder = MODELFOLDER
         fileCount = 0
         while (fileCount != args.num_users):
             for file in os.scandir(modelFolder):
