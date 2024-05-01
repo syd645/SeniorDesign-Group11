@@ -84,13 +84,14 @@ class LocalUpdate(object):
                 loss = self.loss_func(log_probs, labels)
                 loss.backward()
                 optimizer.step()
-                if self.args.verbose and batch_idx % 2 == 0:
-                    print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        iter, batch_idx * len(images), len(self.ldr_train.dataset),
-                               100. * batch_idx / len(self.ldr_train), loss.item()))
+                #if self.args.verbose and batch_idx % 2 == 0:
+                 #   print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                  #      iter, batch_idx * len(images), len(self.ldr_train.dataset),
+                   #            100. * batch_idx / len(self.ldr_train), loss.item()))
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
-            #test_accuracy, test_loss = test(net, self.ldr_test, self.args)
+            print('Local Epoch {} Finished'.format(iter))
+            train_accuracy, train_loss = test(net, self.ldr_train, self.args)
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss), epoch_loss
 
 
@@ -172,7 +173,7 @@ while True:
 
 
     test_loader = DataLoader(dataset_test, batch_size=args.local_bs, shuffle=False)
-    torch.manual_seed(51)
+    torch.manual_seed(56)
     
     # Create an instance of LocalUpdate
     local_update = LocalUpdate(args, dataset_train, dataset_test)
@@ -242,16 +243,6 @@ while True:
     SendToServer(server=server_SSH,file="main_server_fed_"+CLIENT_ID+".pt",
                 filepath=file_path+"main_server_fed_"+CLIENT_ID+".pt",
                 message="sent file")
-
-
-
-
-
-
-
-
-
-
 
 
 
