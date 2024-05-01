@@ -142,22 +142,29 @@ f = open("config.txt", "r")
 lineCount = 0
 for line in f:
     currentLine = line.strip('\n').split("=")
-    print(currentLine)
+   # print(currentLine)
 
     if currentLine[0] == 'CLIENT_ID':
         CLIENT_ID = currentLine[1]
+        CLIENT_ID = int(CLIENT_ID)
+       # print(CLIENT_ID)
     
     if currentLine[0] == 'SERVER_PORT':
         PORT = currentLine[1]
+        CLIENT_ID = int(CLIENT_ID)
+       # print(PORT)  
 
     if currentLine[0] == 'SERVER_IP':
         SERVER = currentLine[1]
+       # print(SERVER)
     
     if currentLine[0] == 'SERVER_NAME':
         SERVER_NAME = currentLine[1]
+       # print(SERVER_NAME)
     
     if currentLine[0] == 'SERVER_PASS':
         SERVER_PASS = currentLine[1]
+        #print(SERVER_PASS)
     
     lineCount += 1
 
