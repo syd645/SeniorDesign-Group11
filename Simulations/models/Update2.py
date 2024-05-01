@@ -38,7 +38,7 @@ class LocalUpdate(object):
     def train(self, net):
         print("Starting local..", self.pBudget)
         #model = net
-    #    net.train()
+        net.train()
         #model.train()
         # train and update
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
@@ -46,14 +46,14 @@ class LocalUpdate(object):
         DELTA = 5e-4             #Should be less than 1/# data items 
 
         # enter PrivacyEngine
-#        privacy_engine = PrivacyEngine()
-      #  model, optimizer, data_loader = privacy_engine.make_private(
-       #     module=net,
-       #     optimizer=optimizer,
-       #     data_loader=self.ldr_train,
-       #     noise_multiplier=1.1,
-       #     max_grad_norm=1.0,
-        #)
+        privacy_engine = PrivacyEngine()
+        model, optimizer, data_loader = privacy_engine.make_private(
+            module=net,
+            optimizer=optimizer,
+            data_loader=self.ldr_train,
+            noise_multiplier=1.1,
+            max_grad_norm=1.0,
+        )
 
 #        model, optimizer, data_loader = privacy_engine.make_private_with_epsilon(
 #            module=net,
@@ -94,8 +94,8 @@ class LocalUpdate(object):
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
             
-      #  epsilon = privacy_engine.get_epsilon(DELTA)
-        epsilon = 0
+        epsilon = privacy_engine.get_epsilon(DELTA)
+        #epsilon = 0
         print(f"(ε = {epsilon:.2f}, δ = {DELTA})")
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss), epsilon
 
